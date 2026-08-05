@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RestaurantReservation.Db.Models;
 
-namespace RestaurantReservation.Db.Conext;
+namespace RestaurantReservation.Db.Context;
 
-public class RestaurantReservationDbContext : DbContext                                               
+public class RestaurantReservationDbContext : DbContext
 {
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<Table> Tables { get; set; }
@@ -12,29 +13,42 @@ public class RestaurantReservationDbContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
-    
+    public DbSet<OrderItem> OrderItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<OrderItem>()
-            .HasKey(oi => oi.OrderItemId);
-
+        // A menu item may appear at most once per order.
         modelBuilder.Entity<OrderItem>()
             .HasIndex(oi => new { oi.OrderId, oi.ItemId })
             .IsUnique();
 
-        modelBuilder.Entity<OrderItem>()
-            .HasOne(oi => oi.Order)
-            .WithMany(o => o.OrderItems)
-            .HasForeignKey(oi => oi.OrderId);
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.Restaurant)
+            .WithMany(r => r.Reservations)
+            .HasForeignKey(r => r.RestaurantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.Table)
+            .WithMany(t => t.Reservations)
+            .HasForeignKey(r => r.TableId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Employee)
+            .WithMany(e => e.Orders)
+            .HasForeignKey(o => o.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<OrderItem>()
             .HasOne(oi => oi.MenuItem)
             .WithMany(mi => mi.OrderItems)
-            .HasForeignKey(oi => oi.ItemId);
+            .HasForeignKey(oi => oi.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=localhost,1434;Database=RestaurantReservationCore;User Id=kilani;Password=Nevigate@123;TrustServerCertificate=True;").UseSnakeCaseNamingConvention();
+        optionsBuilder.UseSqlServer("Server=localhost,1433;Database=RestaurantReservationCore;User Id=kilani;Password=Nevigate@123;TrustServerCertificate=True;").UseSnakeCaseNamingConvention();
     }
 }
