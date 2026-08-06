@@ -10,9 +10,19 @@ using (var seedContext = new RestaurantReservationDbContext())
 
 using var context = new RestaurantReservationDbContext();
 
-IEmployeeRepository repository = new EmployeeRepository(context);
-IEmployeeService service = new EmployeeService(repository);
+IEmployeeRepository employeeRepository = new EmployeeRepository(context);
+IEmployeeService service = new EmployeeService(employeeRepository);
 
 var managers = await service.ListAllManagersAsync();
 
 managers.ForEach(e => Console.WriteLine(e.FirstName + " " + e.LastName));
+
+System.Console.WriteLine("------------------------------------------------");
+System.Console.WriteLine("------------------------------------------------");
+System.Console.WriteLine();
+
+IReservationRepository reservationRepository = new ReservationRepository(context);
+
+var reservations = await reservationRepository.GetReservationsByCustomer(1);
+
+reservations.ForEach(r => Console.WriteLine($"id: {r.ReservationId}, customer name: {r.Customer.FirstName} {r.Customer.LastName}, Date: {r.ReservationDate}"));
