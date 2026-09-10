@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RestaurantReservation.Db\RestaurantReservation.Db.csproj" />
+    </ItemGroup>
+
+</Project>
