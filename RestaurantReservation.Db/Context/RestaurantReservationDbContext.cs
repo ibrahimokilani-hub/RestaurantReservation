@@ -6,6 +6,16 @@ namespace RestaurantReservation.Db.Context;
 
 public class RestaurantReservationDbContext : DbContext
 {
+
+    public RestaurantReservationDbContext()
+    {
+    }
+
+    public RestaurantReservationDbContext(
+        DbContextOptions<RestaurantReservationDbContext> options)
+        : base(options)
+    {
+    }
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<Table> Tables { get; set; }
     public DbSet<Customer> Customers { get; set; }
@@ -49,6 +59,17 @@ public class RestaurantReservationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=localhost,1433;Database=RestaurantReservationCore;User Id=kilani;Password=Nevigate@123;TrustServerCertificate=True;").UseSnakeCaseNamingConvention();
+
+        if (optionsBuilder.IsConfigured)
+            return;
+
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddUserSecrets<RestaurantReservationDbContext>()
+            .Build();
+
+        var connectionString =
+            configuration.GetConnectionString("DefaultConnection");
+
+        optionsBuilder.UseSqlServer(connectionString).UseSnakeCaseNamingConvention();
     }
 }
